@@ -2,50 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScenarioMovementHandler : MonoBehaviour
+public abstract class LayerMovementBase : MonoBehaviour
 {
-    [SerializeField] private List<ScenePortion> _scenarioPieces = new List<ScenePortion>();
-    [SerializeField] private List<ParalaxLayer> _paralaxPieces = new List<ParalaxLayer>();
-    [SerializeField] private int _numberOfActivePieces = 3;
-    [SerializeField] private Transform _endPointPosition;
-    [SerializeField] private float  _movementSpeed = 3.0f;
+    [SerializeField] protected List<ScenePortionBase> _scenarioPieces = new List<ScenePortionBase>();
+    [SerializeField] protected int _numberOfActivePieces = 3;
+    [SerializeField] protected Transform _endPointPosition;
+    [SerializeField] protected float _speedMultiplier = 1.0f;
+    protected List<ScenePortionBase> _visibleScenarios = new List<ScenePortionBase>();
+    protected ScenePortionBase _frontPiece;
+    protected ScenePortionBase _backPiece;
 
-    private List<ScenePortion> _visibleScenarios = new List<ScenePortion>();
-    private ScenePortion _frontPiece;
-    private ScenePortion _backPiece;
-    private float _madeDistance = 0.0f;
     private void Start()
     {
         SetInitialPieces();
     }
 
-    // Update is called once per frame
     private void Update()
     {
-        MoveScenario();
         CheckIfNewPieceNeeded();
-        MoveParalaxElements();
     }
 
-    private void MoveScenario()
+    public void MovePieces(float movementValue)
     {
-        foreach (ScenePortion portion in _visibleScenarios)
+        foreach (ScenePortionBase portion in _visibleScenarios)
         {
-            portion.transform.position -= Vector3.right * _movementSpeed * Time.deltaTime;
+            portion.transform.position -= Vector3.right * movementValue * _speedMultiplier;
 
         }
-        _madeDistance += _movementSpeed * Time.deltaTime;
-
     }
 
-    private void MoveParalaxElements()
-    {
-        foreach (ParalaxLayer item in _paralaxPieces)
-        {
-            item.MoveParalaxLayer(_movementSpeed);
-        }
-    }
-    private void CheckIfNewPieceNeeded()
+    protected void CheckIfNewPieceNeeded()
     {
         if (_frontPiece.transform.position.x >= _endPointPosition.position.x)
         {
@@ -57,7 +43,7 @@ public class ScenarioMovementHandler : MonoBehaviour
 
     private void AttachNewPart()
     {
-        ScenePortion newPart; ;
+        ScenePortionBase newPart; ;
         _frontPiece.Deactivate();
         _visibleScenarios.Remove(_frontPiece);
         _frontPiece = _visibleScenarios[0];
@@ -68,9 +54,9 @@ public class ScenarioMovementHandler : MonoBehaviour
         _backPiece.Activate();
 
     }
-    private void SetInitialPieces()
+    protected void SetInitialPieces()
     {
-        ScenePortion _freeScenePortion;
+        ScenePortionBase _freeScenePortion;
         for (int i = 0; i <= _numberOfActivePieces; i++)
         {
 
@@ -91,13 +77,13 @@ public class ScenarioMovementHandler : MonoBehaviour
         _frontPiece = _visibleScenarios[0];
     }
 
-    private ScenePortion GetFreeScenePortion()
+    protected ScenePortionBase GetFreeScenePortion()
     {
-        List<ScenePortion> _freeScenees = new List<ScenePortion>();
+        List<ScenePortionBase> _freeScenees = new List<ScenePortionBase>();
 
-        foreach (ScenePortion item in _scenarioPieces)
+        foreach (ScenePortionBase item in _scenarioPieces)
         {
-            if (!item.inUse)
+            if (!item.InUse)
             {
                 _freeScenees.Add(item);
             }
@@ -106,3 +92,4 @@ public class ScenarioMovementHandler : MonoBehaviour
         return _freeScenees[_currentScenePortion];
     }
 }
+

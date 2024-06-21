@@ -6,18 +6,41 @@ using UnityEngine;
 public class PauseMenuFacade : MonoBehaviour
 {
     [SerializeField] private PauseMenuAnimator _pauseMenuAnimator;
-    [SerializeField] private GameObject _pauseMenuGO;
+    [SerializeField] private PauseMenuAnimator _dieMenuAnimator;
+    [SerializeField] private GameObject _systemMenuGO;
     [SerializeField] private SceneSignalSender _sceneSignalSender;
     [SerializeField] private PauseSignalSO _pauseSignalSO;
+    [SerializeField] private DieSignalSO _dieSignalSO;
+    private PauseMenuAnimator _currentAnimator = null;
     private Action _onCloseMenuAction = null;
+    private bool _isOpen = false;
     private void OnEnable()
     {
         _pauseSignalSO.onGamePause.AddListener(PauseGame);
+        _dieSignalSO.onDieEvent.AddListener(PauseDead);
     }
 
     private void PauseGame()
     {
+        if (_isOpen)
+        {
+            return;
+        }
+        _isOpen = true;
         Time.timeScale = 0.0f;
+        _currentAnimator = _pauseMenuAnimator ;
+        OpenMenu();
+    }
+
+    private void PauseDead()
+    {
+        if (_isOpen)
+        {
+            return;
+        }
+        _isOpen = true;
+        Time.timeScale = 0.0f;
+        _currentAnimator = _dieMenuAnimator;
         OpenMenu();
     }
 
@@ -35,19 +58,19 @@ public class PauseMenuFacade : MonoBehaviour
 
     public void OpenMenu()
     {
-        _pauseMenuGO.SetActive(true);
-        _pauseMenuAnimator.gameObject.SetActive(true);
+        _systemMenuGO.SetActive(true);
+        _currentAnimator.gameObject.SetActive(true);
     }
 
     public void CloseMenu()
     {
-        _pauseMenuAnimator.ExitMenuAnimation(OnMenuClosed);
+        _currentAnimator.ExitMenuAnimation(OnMenuClosed);
     }
 
     private void OnMenuClosed()
     {
-        _pauseMenuAnimator.gameObject.SetActive(false);
-        _pauseMenuGO.SetActive(false);
+        _currentAnimator.gameObject.SetActive(false);
+        _systemMenuGO.SetActive(false);
         _onCloseMenuAction?.Invoke();
         _onCloseMenuAction = null;
     }
@@ -55,10 +78,12 @@ public class PauseMenuFacade : MonoBehaviour
     private void ResumeGameTime()
     {
         Time.timeScale = 1.0f;
+        _isOpen = false;
     }
 
     private void GoBackToMenu()
     {
         _sceneSignalSender.OpeMenuScene();
+        _isOpen = false;
     }
 }

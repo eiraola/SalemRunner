@@ -10,6 +10,7 @@ public class JumpHandler : MonoBehaviour
     [SerializeField] private float _jumpReleasedSpeedLose = 2f;
     [SerializeField] private float _maxAppexPoint = 0.2f;
     [SerializeField] private float _maxAppexSpeed = 0.5f;
+    [SerializeField] private float _jumpInputBuffer = 0.1f;
     [SerializeField] private LayerMask _layersToIgnore = new LayerMask();
     [SerializeField] private UnityEvent<bool> _onGrounded = new UnityEvent<bool>();
     private Vector3 _targetSpeed = Vector3.zero;
@@ -18,6 +19,7 @@ public class JumpHandler : MonoBehaviour
     private float _gravityForce = 0;
     private float _jumpForce = 0;
     private bool _isJumpButtonPressed = false;
+    private float _lastTimeJumpPressed = 0.0f;
 
     private void Start()
     {
@@ -29,6 +31,7 @@ public class JumpHandler : MonoBehaviour
     private void Update()
     {
         Move();
+        CheckJump();
         transform.position += _currentSpeed;
         _onGrounded?.Invoke(_currentSpeed.y == 0.0f);
     }
@@ -72,14 +75,15 @@ public class JumpHandler : MonoBehaviour
             _currentSpeed.y = 0.0f;
         }
     }
-
-    public void JumpAction() {
-        _isJumpButtonPressed = true;
-        if (_groundCollision.DistanceToGround() < 0.001f)
+    public void CheckJump() {
+        if (_groundCollision.DistanceToGround() < 0.001f && _isJumpButtonPressed && (_lastTimeJumpPressed + _jumpInputBuffer) > Time.time )
         {
             _targetSpeed.y = _jumpForce;
         }
-        
+    }
+    public void JumpAction() {
+        _isJumpButtonPressed = true;
+        _lastTimeJumpPressed = Time.time;
     }
 
     public void OnJumpReleased()
