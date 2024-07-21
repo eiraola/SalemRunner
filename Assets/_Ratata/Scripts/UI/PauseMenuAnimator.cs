@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PauseMenuAnimator : MonoBehaviour
 {
     [SerializeField] private List<Button> _buttons = new List<Button> ();
+    [SerializeField] private SoundSignalSO _soundSignalSO;
     private Vector3 _originalPose;
     private Vector3 _originalScale;
 
@@ -25,6 +26,7 @@ public class PauseMenuAnimator : MonoBehaviour
     public void EnterMenuAnimation(Action onEndFunction = null)
     {
         EnableButtons(false);
+        PlayMenuEnterSound();
         transform.position = transform.position - Vector3.up * 10;
         transform.localScale = Vector3.zero;
         Sequence sequence = DOTween.Sequence();
@@ -40,11 +42,12 @@ public class PauseMenuAnimator : MonoBehaviour
     public void ExitMenuAnimation(Action onEndFunction = null)
     {
         EnableButtons(false);
+        PlayMenuExitSound();
         transform.position = _originalPose;
         transform.localScale = _originalScale;
         Sequence sequence = DOTween.Sequence();
         sequence.Insert(0, transform.DOMove(transform.position - Vector3.up * 10, 0.5f));
-        sequence.Insert(0, transform.DOScale(Vector3.zero, 0.5f)).SetEase(Ease.InBounce);
+        sequence.Insert(0, transform.DOScale(Vector3.zero, 0.5f)).SetEase(Ease.OutBounce);
         sequence.OnComplete(() => PlayAction(onEndFunction));
     }
 
@@ -59,5 +62,15 @@ public class PauseMenuAnimator : MonoBehaviour
         {
             button.enabled = enable;
         }
+    }
+
+    private void PlayMenuEnterSound()
+    {
+        _soundSignalSO.PlayClipSound(EClip.PauseMenuEnter);
+    }
+
+    private void PlayMenuExitSound()
+    {
+        _soundSignalSO.PlayClipSound(EClip.PauseMenuExit);
     }
 }

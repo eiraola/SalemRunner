@@ -33,7 +33,7 @@ public abstract class LayerMovementBase : MonoBehaviour
 
     protected void CheckIfNewPieceNeeded()
     {
-        if (_frontPiece.transform.position.x >= _endPointPosition.position.x)
+        if (_frontPiece.GetEndPoint().x >= _endPointPosition.position.x)
         {
             return;
         }
@@ -57,7 +57,7 @@ public abstract class LayerMovementBase : MonoBehaviour
     protected void SetInitialPieces()
     {
         ScenePortionBase _freeScenePortion;
-        for (int i = 0; i <= _numberOfActivePieces; i++)
+        for (int i = 0; i < _numberOfActivePieces; i++)
         {
 
             _freeScenePortion = GetFreeScenePortion();

@@ -22,7 +22,6 @@ public class OnScenarioPartHitHandler : MonoBehaviour
     private void OnPlayerHit()
     {
         _onPlayerHit?.Invoke();
-        Debug.LogError("Ouch!");
     }
 
 }

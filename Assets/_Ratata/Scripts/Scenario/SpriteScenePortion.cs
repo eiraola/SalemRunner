@@ -9,7 +9,7 @@ public class SpriteScenePortion : ScenePortionBase
         {
             if (!_spriteRenderer)
             {
-                _spriteRenderer = GetComponent<SpriteRenderer>();
+                _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             }
             return _spriteRenderer;
         }

@@ -11,6 +11,7 @@ public class PauseMenuFacade : MonoBehaviour
     [SerializeField] private SceneSignalSender _sceneSignalSender;
     [SerializeField] private PauseSignalSO _pauseSignalSO;
     [SerializeField] private DieSignalSO _dieSignalSO;
+    [SerializeField] private SoundSignalSO _soundSignalSO;
     private PauseMenuAnimator _currentAnimator = null;
     private Action _onCloseMenuAction = null;
     private bool _isOpen = false;
@@ -53,6 +54,7 @@ public class PauseMenuFacade : MonoBehaviour
     public void GoToMainMenu()
     {
         _onCloseMenuAction = GoBackToMenu;
+        _soundSignalSO.StopClip();
         CloseMenu();
     }
 
